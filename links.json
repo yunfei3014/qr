@@ -2,5 +2,9 @@
   "meet": {
     "url": "https://calendly.com/founders-butterbase/30min",
     "label": "Butterbase founders — 30 min intro call"
+  },
+  "wsgr": {
+    "url": "https://wsgr-web.butterbase.dev/",
+    "label": "WSGR web"
   }
 }
