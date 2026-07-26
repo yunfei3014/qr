@@ -109,7 +109,10 @@ def main() -> None:
         out.mkdir(exist_ok=True)
         (out / "index.html").write_text(REDIRECT.format(url=url, label=label))
 
-        qr = segno.make(short, error="h")
+        # ECC Q = 25% damage tolerance. Deliberately not H: at this URL length
+        # H pushes the symbol to v5 (37x37), which some decoders (OpenCV's) fail
+        # to read. Q stays at v4 (33x33) and decodes on every engine tested.
+        qr = segno.make(short, error="q")
         qr.save(CODES / f"{slug}.svg", scale=8, border=4)
         qr.save(CODES / f"{slug}.png", scale=10, border=4)
         qr.save(CODES / f"{slug}-print.png", scale=40, border=4)
