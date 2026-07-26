@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QR links</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { margin:0; padding:48px 24px; background:#fafaf9; color:#18181b;
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:720px; margin:0 auto; }
+  h1 { font-size:22px; font-weight:650; margin:0 0 4px; letter-spacing:-.01em; }
+  .sub { color:#71717a; font-size:14px; margin:0 0 40px; }
+  .card { display:flex; gap:24px; align-items:center; padding:24px;
+    border:1px solid #e4e4e7; border-radius:14px; background:#fff; margin-bottom:16px; }
+  .card img { width:120px; height:120px; flex:none; }
+  .label { font-weight:600; margin:0 0 6px; }
+  code { font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:#f4f4f5; padding:2px 6px; border-radius:5px; }
+  .dest { display:block; margin-top:8px; font-size:13px; color:#71717a;
+    word-break:break-all; }
+  .dl { font-size:13px; margin-top:10px; }
+  @media (prefers-color-scheme: dark) {
+    body { background:#0b0b0c; color:#f5f5f4; }
+    .card { background:#141416; border-color:#27272a; }
+    code { background:#27272a; }
+  }
+</style>
+</head>
+<body>
+<main>
+<h1>QR links</h1>
+<p class="sub">Permanent redirects. No expiry, no scan limit. Edit
+<code>links.json</code> to repoint any code.</p>
+<div class="card">
+  <img src="codes/meet.svg" alt="QR code for meet">
+  <div>
+    <p class="label">Butterbase founders — 30 min intro call</p>
+    <code>https://yunfei3014.github.io/qr/meet/</code>
+    <a class="dest" href="https://calendly.com/founders-butterbase/30min">&rarr; https://calendly.com/founders-butterbase/30min</a>
+    <p class="dl"><a href="codes/meet.svg">SVG</a> &middot;
+      <a href="codes/meet.png">PNG</a> &middot;
+      <a href="codes/meet-print.png">Print PNG</a></p>
+  </div>
+</div>
+</main>
+</body>
+</html>

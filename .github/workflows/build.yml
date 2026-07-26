@@ -1,0 +1,30 @@
+name: Rebuild QR pages
+
+# Runs only when links.json changes, so the bot's own commit
+# (which touches index.html / codes/ / <slug>/) can never re-trigger it.
+on:
+  push:
+    branches: [main]
+    paths: ['links.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install segno
+      - run: python3 build.py
+      - name: Commit regenerated pages
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "build: regenerate redirects and QR codes"
+          git push
