@@ -119,7 +119,7 @@ def main() -> None:
 
         cards.append(INDEX_CARD.format(slug=slug, label=label, short=short, url=url))
         print(f"{slug:12} -> {url}\n{'':12}    QR encodes {short} "
-              f"(v{qr.version}, ecc H, {len(short)} chars)")
+              f"(v{qr.version}, ecc {qr.error}, {len(short)} chars)")
 
     (ROOT / "index.html").write_text(
         INDEX_HEAD + "".join(cards) + "</main>\n</body>\n</html>\n"
