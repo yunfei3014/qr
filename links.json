@@ -7,6 +7,10 @@
     "url": "https://wsgr-web.butterbase.dev/",
     "label": "WSGR web"
   },
+  "spc": {
+    "url": "https://qr.butterbase.dev/?s=spc",
+    "label": "SPC Demo Faire — lead capture form"
+  },
   "spc-demo-faire": {
     "label": "Email founders@ — SPC Demo Faire",
     "mailto": {
