@@ -41,6 +41,34 @@ git commit -am "repoint meet" && git push
 
 Then rebuild. New QR lands in `codes/deck.svg`.
 
+## Non-http codes (mailto, tel, sms)
+
+A `mailto` block encodes the URI **directly** into the QR instead of routing it
+through a redirect page. Scanners then offer a native "Send Email" action.
+Author it as plain text; `build.py` percent-encodes it.
+
+```json
+"spc-demo-faire": {
+  "label": "Email founders@ — SPC Demo Faire",
+  "mailto": {
+    "to": "founders@butterbase.ai",
+    "subject": "SPC Demo Faire",
+    "body": "Hi Willow, good to connect at SPC Demo Faire!"
+  }
+}
+```
+
+Or set `"raw": true` alongside a `"url"` to encode any URI verbatim (`tel:`,
+`sms:`, `WIFI:`).
+
+**Trade-off:** a direct-encoded code is NOT repointable. Editing it later
+produces a different QR, so anything already printed keeps the old contents.
+Use it for dated, single-purpose codes; use the redirect form for anything
+you might want to change.
+
+Why not bounce https → mailto? In-app browsers (LinkedIn, Instagram) commonly
+block the scheme handoff and leave a blank tab. Direct encoding avoids that.
+
 ## Limits
 
 GitHub Pages soft limits: 100 GB bandwidth/month, 10 builds/hour. A redirect

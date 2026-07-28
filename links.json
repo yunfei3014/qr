@@ -6,5 +6,13 @@
   "wsgr": {
     "url": "https://wsgr-web.butterbase.dev/",
     "label": "WSGR web"
+  },
+  "spc-demo-faire": {
+    "label": "Email founders@ — SPC Demo Faire",
+    "mailto": {
+      "to": "founders@butterbase.ai",
+      "subject": "SPC Demo Faire",
+      "body": "Hi Willow, good to connect at SPC Demo Faire!"
+    }
   }
 }

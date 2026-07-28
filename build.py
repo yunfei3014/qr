@@ -8,6 +8,7 @@ Edit links.json to change where a QR code points. The printed QR never changes.
 import json
 import pathlib
 import shutil
+from urllib.parse import quote
 
 import segno
 
@@ -91,6 +92,19 @@ INDEX_CARD = """<div class="card">
 </div>
 """
 
+RAW_CARD = """<div class="card">
+  <img src="codes/{slug}.svg" alt="QR code for {slug}">
+  <div>
+    <p class="label">{label}</p>
+    <code>encoded directly &mdash; not repointable</code>
+    <a class="dest" href="{url}">&rarr; {url}</a>
+    <p class="dl"><a href="codes/{slug}.svg">SVG</a> &middot;
+      <a href="codes/{slug}.png">PNG</a> &middot;
+      <a href="codes/{slug}-print.png">Print PNG</a></p>
+  </div>
+</div>
+"""
+
 
 def main() -> None:
     links = json.loads((ROOT / "links.json").read_text())
@@ -101,25 +115,51 @@ def main() -> None:
 
     cards = []
     for slug, cfg in sorted(links.items()):
-        url = cfg["url"]
         label = cfg.get("label", slug)
-        short = f"{BASE}/{slug}/"
 
-        out = ROOT / slug
-        out.mkdir(exist_ok=True)
-        (out / "index.html").write_text(REDIRECT.format(url=url, label=label))
+        # A "mailto" block is authored as plain text and percent-encoded here,
+        # so nobody has to hand-write %20 / %2C in links.json. Implies raw.
+        if "mailto" in cfg:
+            m = cfg["mailto"]
+            parts = [(k, m[k]) for k in ("subject", "body") if m.get(k)]
+            query = "&".join(f"{k}={quote(v, safe='')}" for k, v in parts)
+            url = "mailto:" + m["to"].strip() + (f"?{query}" if query else "")
+            cfg = {**cfg, "raw": True}
+        else:
+            url = cfg["url"]
 
-        # ECC Q = 25% damage tolerance. Deliberately not H: at this URL length
-        # H pushes the symbol to v5 (37x37), which some decoders (OpenCV's) fail
-        # to read. Q stays at v4 (33x33) and decodes on every engine tested.
-        qr = segno.make(short, error="q")
+        # raw: encode the URI verbatim instead of routing through a redirect page.
+        # Needed for non-http schemes (mailto:, tel:, sms:, WIFI:) where scanners
+        # offer a native action, and where an https->scheme bounce is unreliable
+        # inside in-app browsers. Cost: the code is NOT repointable afterwards.
+        raw = bool(cfg.get("raw"))
+
+        if raw:
+            encoded = url
+            # ECC M, not Q: mailto URIs are long, and Q would push this to a
+            # much denser symbol that scans worse across a table.
+            ecc = "m"
+        else:
+            encoded = f"{BASE}/{slug}/"
+            # ECC Q = 25% damage tolerance. Deliberately not H: at this URL
+            # length H pushes the symbol to v5 (37x37), which some decoders
+            # (OpenCV's) fail to read. Q stays at v4 (33x33).
+            ecc = "q"
+            out = ROOT / slug
+            out.mkdir(exist_ok=True)
+            (out / "index.html").write_text(REDIRECT.format(url=url, label=label))
+
+        qr = segno.make(encoded, error=ecc)
         qr.save(CODES / f"{slug}.svg", scale=8, border=4)
         qr.save(CODES / f"{slug}.png", scale=10, border=4)
         qr.save(CODES / f"{slug}-print.png", scale=40, border=4)
 
-        cards.append(INDEX_CARD.format(slug=slug, label=label, short=short, url=url))
-        print(f"{slug:12} -> {url}\n{'':12}    QR encodes {short} "
-              f"(v{qr.version}, ecc {qr.error}, {len(short)} chars)")
+        tmpl = RAW_CARD if raw else INDEX_CARD
+        cards.append(tmpl.format(slug=slug, label=label, short=encoded, url=url))
+        mods = qr.symbol_size(scale=1, border=0)[0]
+        print(f"{slug:16} -> {url}\n{'':16}    QR encodes "
+              f"{'the URI directly' if raw else encoded} "
+              f"(v{qr.version}, {mods}x{mods}, ecc {qr.error}, {len(encoded)} chars)")
 
     (ROOT / "index.html").write_text(
         INDEX_HEAD + "".join(cards) + "</main>\n</body>\n</html>\n"
